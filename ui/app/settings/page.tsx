@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Eye, EyeOff, Save, Trash2 } from 'lucide-react';
 import { STORAGE_KEY, MODEL_STORAGE_KEY, DEFAULT_ARK_MODEL } from '@/lib/apiKey';
@@ -33,6 +34,10 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
+      <Link href="/" className="text-sm text-[var(--text-muted)]">
+        ← 返回
+      </Link>
+
       <header>
         <h1 className="text-2xl font-semibold">设置</h1>
         <p className="text-sm text-[var(--text-muted)] mt-1">仅存在你的浏览器，不上传任何服务器</p>

@@ -63,6 +63,10 @@ export default function RecommendPage() {
 
   return (
     <div className="space-y-5">
+      <Link href="/" className="text-sm text-[var(--text-muted)]">
+        ← 返回
+      </Link>
+
       <header>
         <h1 className="text-2xl font-semibold flex items-center gap-2">
           <Sparkles size={20} className="text-[var(--accent)]" /> AI 推荐

@@ -29,6 +29,10 @@ export default function WallPage() {
 
   return (
     <div className="space-y-5">
+      <Link href="/" className="text-sm text-[var(--text-muted)]">
+        ← 返回
+      </Link>
+
       <header>
         <h1 className="text-2xl font-semibold">📷 年度照片墙</h1>
         <p className="text-sm text-[var(--text-muted)] mt-1">
