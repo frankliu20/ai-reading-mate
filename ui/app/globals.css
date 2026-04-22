@@ -38,3 +38,19 @@ html, body {
 /* hide scrollbars but keep scroll for filter chips */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* gradient fade hint for scrollable filter rows */
+.scroll-fade {
+  position: relative;
+}
+.scroll-fade::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 2rem;
+  background: linear-gradient(to right, transparent, var(--bg));
+  pointer-events: none;
+  border-radius: 0 0.5rem 0.5rem 0;
+}

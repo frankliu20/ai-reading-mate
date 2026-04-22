@@ -24,7 +24,6 @@ export default function CompactCoverGrid({ books }: { books: Book[] }) {
               alt={b.title}
               fill
               sizes="72px"
-              unoptimized
               className={`object-cover transition-transform group-hover:scale-105 ${
                 b.finishReading ? '' : 'opacity-50 grayscale'
               }`}

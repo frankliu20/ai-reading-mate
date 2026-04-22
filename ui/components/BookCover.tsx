@@ -21,7 +21,6 @@ export default function BookCover({ book, size = 'md' }: { book: Book; size?: 's
             fill
             sizes={`${dims.w}px`}
             className="object-cover"
-            unoptimized
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-xs text-[var(--text-muted)] p-2 text-center">

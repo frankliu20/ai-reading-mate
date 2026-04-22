@@ -32,9 +32,7 @@ export default function AuthorTreemap({
     <div ref={ref} className="w-full">
       <svg
         viewBox={`0 0 ${width} ${height}`}
-        width={width}
-        height={height}
-        className="block"
+        className="block w-full h-auto"
       >
         {rects.map(({ item, x, y, w, h }) => {
           const e = item as AuthorEntry & { value: number };

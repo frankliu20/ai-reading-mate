@@ -155,7 +155,7 @@ function ToggleBtn({
   return (
     <button
       onClick={onClick}
-      className={`text-sm px-3 py-1.5 rounded-full border transition-colors ${
+      className={`text-sm px-4 py-2.5 rounded-full border transition-colors ${
         active
           ? 'bg-[var(--accent)] text-white border-[var(--accent)]'
           : 'bg-[var(--bg-card)] text-[var(--text-muted)] border-[var(--border)] hover:text-[var(--text)]'

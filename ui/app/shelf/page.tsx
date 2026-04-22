@@ -125,42 +125,46 @@ function FilterBar({
   const ts = themes();
   return (
     <div className="space-y-3">
-      <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4">
-        <Chip
-          active={!activeYear && !activeTheme}
-          onClick={() => {
-            onYearChange('');
-            onThemeChange('');
-          }}
-        >
-          全部
-        </Chip>
-        {ys.map((y) => (
+      <div className="scroll-fade">
+        <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4">
           <Chip
-            key={y}
-            active={activeYear === y}
+            active={!activeYear && !activeTheme}
             onClick={() => {
-              onYearChange(activeYear === y ? '' : y);
+              onYearChange('');
               onThemeChange('');
             }}
           >
-            {y}
+            全部
           </Chip>
-        ))}
+          {ys.map((y) => (
+            <Chip
+              key={y}
+              active={activeYear === y}
+              onClick={() => {
+                onYearChange(activeYear === y ? '' : y);
+                onThemeChange('');
+              }}
+            >
+              {y}
+            </Chip>
+          ))}
+        </div>
       </div>
-      <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4">
-        {ts.map((t) => (
-          <Chip
-            key={t}
-            active={activeTheme === t}
-            onClick={() => {
-              onYearChange('');
-              onThemeChange(activeTheme === t ? '' : t);
-            }}
-          >
-            {t} <span className="opacity-60 text-xs">{meta.stats.booksByTheme[t]}</span>
-          </Chip>
-        ))}
+      <div className="scroll-fade">
+        <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4">
+          {ts.map((t) => (
+            <Chip
+              key={t}
+              active={activeTheme === t}
+              onClick={() => {
+                onYearChange('');
+                onThemeChange(activeTheme === t ? '' : t);
+              }}
+            >
+              {t} <span className="opacity-60 text-xs">{meta.stats.booksByTheme[t]}</span>
+            </Chip>
+          ))}
+        </div>
       </div>
       <div>
         <Chip
@@ -186,7 +190,7 @@ function Chip({
   return (
     <button
       onClick={onClick}
-      className={`shrink-0 rounded-full px-3 py-1.5 text-sm border transition-colors ${
+      className={`shrink-0 rounded-full px-4 py-2.5 text-sm border transition-colors ${
         active
           ? 'bg-[var(--accent)] text-white border-[var(--accent)]'
           : 'bg-[var(--bg-card)] text-[var(--text-muted)] border-[var(--border)] hover:text-[var(--text)]'

@@ -40,7 +40,7 @@ export default function WallPage() {
         </p>
       </header>
 
-      <section className="-mx-4 px-4 overflow-x-auto md:mx-0 md:px-0 md:overflow-visible">
+      <section className="-mx-4 px-4 overflow-x-auto md:mx-0 md:px-0 md:overflow-visible scroll-fade">
         <div className="flex gap-2 md:flex-wrap whitespace-nowrap pb-1">
           {allYears.map((y) => {
             const active = y === year;
@@ -49,7 +49,7 @@ export default function WallPage() {
               <button
                 key={y}
                 onClick={() => setYear(y)}
-                className={`shrink-0 px-3.5 py-1.5 rounded-full text-sm border transition-colors ${
+                className={`shrink-0 px-4 py-2.5 rounded-full text-sm border transition-colors ${
                   active
                     ? 'bg-[var(--accent)] text-white border-[var(--accent)]'
                     : 'bg-[var(--bg-card)] text-[var(--text-muted)] border-[var(--border)] hover:text-[var(--text)]'
@@ -72,7 +72,7 @@ export default function WallPage() {
         </div>
         <button
           onClick={() => setOnlyFinished((v) => !v)}
-          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs border transition-colors ${
+          className={`flex items-center gap-1.5 px-3 py-2 rounded-full text-xs border transition-colors ${
             onlyFinished
               ? 'bg-[var(--accent)]/10 text-[var(--accent)] border-[var(--accent)]/30'
               : 'bg-[var(--bg-card)] border-[var(--border)] hover:text-[var(--text)]'
@@ -112,7 +112,6 @@ function WallCover({ book }: { book: Book }) {
           fill
           sizes="(min-width:1024px) 14vw, (min-width:768px) 17vw, (min-width:640px) 25vw, 33vw"
           className="object-cover"
-          unoptimized
         />
       ) : (
         <div className="w-full h-full flex items-center justify-center text-[10px] text-[var(--text-muted)] p-2 text-center leading-tight">

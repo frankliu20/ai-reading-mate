@@ -48,7 +48,7 @@ export default function DomainCard({ p }: { p: DomainProfile }) {
                 style={{ width: 48, height: 64 }}
               >
                 {b.cover && (
-                  <Image src={b.cover} alt={b.title} fill sizes="48px" unoptimized className="object-cover" />
+                  <Image src={b.cover} alt={b.title} fill sizes="48px" className="object-cover" />
                 )}
               </Link>
             ))}

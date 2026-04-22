@@ -21,17 +21,17 @@ export default async function BookPage({ params }: Props) {
         ← 返回书架
       </Link>
 
-      <div className="flex gap-4">
+      <div className="flex flex-col sm:flex-row gap-4">
         <div
-          className="relative shrink-0 overflow-hidden rounded-md border border-[var(--border)] shadow-md"
+          className="relative shrink-0 overflow-hidden rounded-md border border-[var(--border)] shadow-md mx-auto sm:mx-0"
           style={{ width: 140, height: 196 }}
         >
           {book.cover && (
-            <Image src={book.cover} alt={book.title} fill sizes="140px" className="object-cover" unoptimized />
+            <Image src={book.cover} alt={book.title} fill sizes="140px" className="object-cover" />
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <h1 className="text-xl md:text-2xl font-semibold leading-tight">{book.title}</h1>
+          <h1 className="text-xl md:text-2xl font-semibold leading-tight sm:text-left text-center">{book.title}</h1>
           <div className="text-sm text-[var(--text-muted)] mt-1">
             {book.author}
             {book.translator && ` / ${book.translator} 译`}
@@ -115,7 +115,6 @@ export default async function BookPage({ params }: Props) {
                       width={60}
                       height={84}
                       className="object-cover w-full h-full"
-                      unoptimized
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-xs text-[var(--text-muted)] p-1 text-center bg-[var(--bg-card)]">
