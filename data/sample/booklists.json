@@ -1,0 +1,303 @@
+{
+  "generated_at": "2026-04-22T14:23:05",
+  "source": "sample data (not a real WeRead account)",
+  "user_vid": "999999",
+  "stats": {
+    "totalBooklists": 3,
+    "yearBooklists": 1,
+    "themeBooklists": 2,
+    "uniqueBooks": 8,
+    "booksByYear": {
+      "2025": 6
+    },
+    "booksByTheme": {
+      "Classics": 4,
+      "Sci-Fi": 4
+    },
+    "inShelf": 8,
+    "finished": 6,
+    "withNotes": 8,
+    "totalReadingHours": 42.5
+  },
+  "booklists": [
+    {
+      "booklistId": "auto-year-2025",
+      "name": "2025",
+      "kind": "year",
+      "label": "2025",
+      "totalCount": 6,
+      "bookIds": [
+        "s001",
+        "s002",
+        "s003",
+        "s004",
+        "s005",
+        "s006"
+      ]
+    },
+    {
+      "booklistId": "auto-theme-Classics",
+      "name": "Classics",
+      "kind": "theme",
+      "label": "Classics",
+      "totalCount": 4,
+      "bookIds": [
+        "s001",
+        "s002",
+        "s003",
+        "s004"
+      ]
+    },
+    {
+      "booklistId": "auto-theme-Sci-Fi",
+      "name": "Sci-Fi",
+      "kind": "theme",
+      "label": "Sci-Fi",
+      "totalCount": 4,
+      "bookIds": [
+        "s005",
+        "s006",
+        "s007",
+        "s008"
+      ]
+    }
+  ],
+  "books": {
+    "s001": {
+      "bookId": "s001",
+      "title": "Pride and Prejudice",
+      "author": "Jane Austen",
+      "translator": "",
+      "cover": "https://covers.openlibrary.org/b/isbn/9780141439518-L.jpg",
+      "publishTime": "1813-01-28 00:00:00",
+      "categories": [
+        "Fiction-Classics"
+      ],
+      "newRating": 920,
+      "newRatingCount": 1234,
+      "ratingTitle": "Beloved",
+      "years": [
+        "2025"
+      ],
+      "themes": [
+        "Classics"
+      ],
+      "inShelf": true,
+      "finishReading": true,
+      "progress": 100,
+      "readingTime": 18000,
+      "readingTimeFormatted": "5h 0m",
+      "updateTime": "2025-03-12T10:00:00Z",
+      "noteCount": 12,
+      "reviewCount": 1,
+      "bookmarkCount": 8,
+      "paid": false
+    },
+    "s002": {
+      "bookId": "s002",
+      "title": "Crime and Punishment",
+      "author": "Fyodor Dostoevsky",
+      "translator": "Constance Garnett",
+      "cover": "https://covers.openlibrary.org/b/isbn/9780486415871-L.jpg",
+      "publishTime": "1866-01-01 00:00:00",
+      "categories": [
+        "Fiction-Classics"
+      ],
+      "newRating": 890,
+      "newRatingCount": 980,
+      "ratingTitle": "Masterpiece",
+      "years": [
+        "2025"
+      ],
+      "themes": [
+        "Classics"
+      ],
+      "inShelf": true,
+      "finishReading": true,
+      "progress": 100,
+      "readingTime": 28800,
+      "readingTimeFormatted": "8h 0m",
+      "updateTime": "2025-05-04T20:00:00Z",
+      "noteCount": 24,
+      "reviewCount": 0,
+      "bookmarkCount": 18,
+      "paid": false
+    },
+    "s003": {
+      "bookId": "s003",
+      "title": "One Hundred Years of Solitude",
+      "author": "Gabriel García Márquez",
+      "translator": "Gregory Rabassa",
+      "cover": "https://covers.openlibrary.org/b/isbn/9780060883287-L.jpg",
+      "publishTime": "1967-05-30 00:00:00",
+      "categories": [
+        "Fiction-Classics"
+      ],
+      "newRating": 905,
+      "newRatingCount": 1100,
+      "ratingTitle": "Masterpiece",
+      "years": [
+        "2025"
+      ],
+      "themes": [
+        "Classics"
+      ],
+      "inShelf": true,
+      "finishReading": true,
+      "progress": 100,
+      "readingTime": 21600,
+      "readingTimeFormatted": "6h 0m",
+      "updateTime": "2025-06-18T22:30:00Z",
+      "noteCount": 9,
+      "reviewCount": 1,
+      "bookmarkCount": 5,
+      "paid": false
+    },
+    "s004": {
+      "bookId": "s004",
+      "title": "The Stranger",
+      "author": "Albert Camus",
+      "translator": "Matthew Ward",
+      "cover": "https://covers.openlibrary.org/b/isbn/9780679720201-L.jpg",
+      "publishTime": "1942-01-01 00:00:00",
+      "categories": [
+        "Fiction-Classics"
+      ],
+      "newRating": 880,
+      "newRatingCount": 760,
+      "ratingTitle": "Beloved",
+      "years": [
+        "2025"
+      ],
+      "themes": [
+        "Classics"
+      ],
+      "inShelf": true,
+      "finishReading": true,
+      "progress": 100,
+      "readingTime": 9000,
+      "readingTimeFormatted": "2h 30m",
+      "updateTime": "2025-07-02T14:00:00Z",
+      "noteCount": 6,
+      "reviewCount": 0,
+      "bookmarkCount": 3,
+      "paid": false
+    },
+    "s005": {
+      "bookId": "s005",
+      "title": "Foundation",
+      "author": "Isaac Asimov",
+      "translator": "",
+      "cover": "https://covers.openlibrary.org/b/isbn/9780553293357-L.jpg",
+      "publishTime": "1951-05-01 00:00:00",
+      "categories": [
+        "Fiction-SciFi"
+      ],
+      "newRating": 900,
+      "newRatingCount": 1500,
+      "ratingTitle": "Genre-defining",
+      "years": [
+        "2025"
+      ],
+      "themes": [
+        "Sci-Fi"
+      ],
+      "inShelf": true,
+      "finishReading": true,
+      "progress": 100,
+      "readingTime": 19800,
+      "readingTimeFormatted": "5h 30m",
+      "updateTime": "2025-08-19T09:00:00Z",
+      "noteCount": 14,
+      "reviewCount": 0,
+      "bookmarkCount": 7,
+      "paid": false
+    },
+    "s006": {
+      "bookId": "s006",
+      "title": "Dune",
+      "author": "Frank Herbert",
+      "translator": "",
+      "cover": "https://covers.openlibrary.org/b/isbn/9780441172719-L.jpg",
+      "publishTime": "1965-08-01 00:00:00",
+      "categories": [
+        "Fiction-SciFi"
+      ],
+      "newRating": 915,
+      "newRatingCount": 2000,
+      "ratingTitle": "Masterpiece",
+      "years": [
+        "2025"
+      ],
+      "themes": [
+        "Sci-Fi"
+      ],
+      "inShelf": true,
+      "finishReading": true,
+      "progress": 100,
+      "readingTime": 32400,
+      "readingTimeFormatted": "9h 0m",
+      "updateTime": "2025-10-05T19:00:00Z",
+      "noteCount": 21,
+      "reviewCount": 1,
+      "bookmarkCount": 12,
+      "paid": false
+    },
+    "s007": {
+      "bookId": "s007",
+      "title": "The Three-Body Problem",
+      "author": "Liu Cixin",
+      "translator": "Ken Liu",
+      "cover": "https://covers.openlibrary.org/b/isbn/9780765382030-L.jpg",
+      "publishTime": "2008-01-01 00:00:00",
+      "categories": [
+        "Fiction-SciFi"
+      ],
+      "newRating": 920,
+      "newRatingCount": 3000,
+      "ratingTitle": "Genre-defining",
+      "years": [],
+      "themes": [
+        "Sci-Fi"
+      ],
+      "inShelf": true,
+      "finishReading": false,
+      "progress": 65,
+      "readingTime": 14400,
+      "readingTimeFormatted": "4h 0m",
+      "updateTime": "2026-02-11T21:00:00Z",
+      "noteCount": 8,
+      "reviewCount": 0,
+      "bookmarkCount": 4,
+      "paid": false
+    },
+    "s008": {
+      "bookId": "s008",
+      "title": "Project Hail Mary",
+      "author": "Andy Weir",
+      "translator": "",
+      "cover": "https://covers.openlibrary.org/b/isbn/9780593135204-L.jpg",
+      "publishTime": "2021-05-04 00:00:00",
+      "categories": [
+        "Fiction-SciFi"
+      ],
+      "newRating": 905,
+      "newRatingCount": 800,
+      "ratingTitle": "Beloved",
+      "years": [],
+      "themes": [
+        "Sci-Fi"
+      ],
+      "inShelf": true,
+      "finishReading": false,
+      "progress": 30,
+      "readingTime": 9000,
+      "readingTimeFormatted": "2h 30m",
+      "updateTime": "2026-03-25T11:00:00Z",
+      "noteCount": 3,
+      "reviewCount": 0,
+      "bookmarkCount": 2,
+      "paid": false
+    }
+  }
+}

@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #faf7f2;
+  --bg-card: #ffffff;
+  --text: #1a1614;
+  --text-muted: #6b6157;
+  --accent: #8b4513;
+  --border: #e8e0d4;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14110e;
+    --bg-card: #1f1a16;
+    --text: #f0e9df;
+    --text-muted: #8a8074;
+    --accent: #d4a574;
+    --border: #2a241e;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-card: var(--bg-card);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-accent: var(--accent);
+  --color-border: var(--border);
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+}
+
+/* hide scrollbars but keep scroll for filter chips */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local scratch
+*.log
+*.tmp
+
+# Private data (gitignored). Point data/private/ at whatever folder holds your
+# own booklists.json — see data/README.md.
+/data/private/

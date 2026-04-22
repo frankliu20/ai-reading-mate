@@ -1,0 +1,17 @@
+{
+  "_comment": "Sample config demonstrating Tier C: no WeRead booklists, LLM-assigned themes via theme_overrides.",
+  "user_vid": "999999",
+  "source": "sample data (not a real WeRead account)",
+  "booklists": {},
+  "auto_years_from_shelf": true,
+  "theme_overrides": {
+    "s001": ["Classics"],
+    "s002": ["Classics"],
+    "s003": ["Classics"],
+    "s004": ["Classics"],
+    "s005": ["Sci-Fi"],
+    "s006": ["Sci-Fi"],
+    "s007": ["Sci-Fi"],
+    "s008": ["Sci-Fi"]
+  }
+}
