@@ -157,6 +157,12 @@ export function authorAreaValue(e: AuthorEntry, mode: 'time' | 'count'): number 
   return e.bookCount * AVG_FALLBACK_SECONDS_PER_BOOK;
 }
 
+export function booksByAuthor(author: string): Book[] {
+  const profiles = authorProfiles();
+  const profile = profiles.find((p) => p.author === author);
+  return profile?.books ?? [];
+}
+
 // ---------- 主题颜色映射 ----------
 
 // 按主题地域/性质设计：每个主题有辨识度，但整体协调（中等饱和度，深一点保证白字可读）

@@ -1,13 +1,31 @@
+'use client';
+
 import Link from 'next/link';
-import { meta, allBooks, themes, years } from '@/lib/data';
+import { useRouter } from 'next/navigation';
+import { meta, allBooks, themes, years, topAuthors, topThemes, yearComparison } from '@/lib/data';
 import BookCover from '@/components/BookCover';
 
 export default function HomePage() {
+  const router = useRouter();
   const s = meta.stats;
+  
   // pick a deterministic "today's book": rotate through finished books by date
   const finished = allBooks().filter((b) => b.finishReading);
   const dayIndex = Math.floor(Date.now() / (1000 * 60 * 60 * 24)) % finished.length;
   const todayBook = finished[dayIndex];
+
+  // Calculate data freshness
+  const generatedDate = new Date(meta.generated_at);
+  const daysSinceUpdate = Math.floor(
+    (Date.now() - generatedDate.getTime()) / (1000 * 60 * 60 * 24)
+  );
+  const showFreshnessWarning = daysSinceUpdate > 30;
+
+  const topAuthorsData = topAuthors(3);
+  const topThemesData = topThemes(3);
+  const yearData = yearComparison();
+  const currentYear = yearData[0];
+  const lastYear = yearData[1];
 
   return (
     <div className="space-y-8">
@@ -18,10 +36,77 @@ export default function HomePage() {
         </p>
       </header>
 
+      {showFreshnessWarning && (
+        <div className="rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 p-3">
+          <p className="text-sm text-yellow-800 dark:text-yellow-200">
+            📊 数据已 {daysSinceUpdate} 天未更新，{' '}
+            <Link href="/settings" className="underline font-semibold hover:text-yellow-900 dark:hover:text-yellow-100">
+              点此刷新数据
+            </Link>
+          </p>
+        </div>
+      )}
+
       <section className="grid grid-cols-3 gap-3">
         <StatCard label="累计书目" value={s.uniqueBooks} unit="本" />
         <StatCard label="已读完" value={s.finished} unit="本" />
         <StatCard label="阅读时长" value={s.totalReadingHours} unit="小时" />
+      </section>
+
+      {currentYear && currentYear.prevChange !== undefined && lastYear && (
+        <section className="grid grid-cols-1 gap-3">
+          <StatCard
+            label="vs 去年"
+            value={currentYear.bookCount}
+            unit="本"
+            secondaryText={
+              currentYear.prevChange > 0
+                ? `↑ ${currentYear.prevChange}%`
+                : currentYear.prevChange < 0
+                  ? `↓ ${Math.abs(currentYear.prevChange)}%`
+                  : '→'
+            }
+          />
+        </section>
+      )}
+
+      <section className="space-y-3">
+        <h2 className="text-sm font-semibold text-[var(--text-muted)] uppercase tracking-wide">
+          Top 作者
+        </h2>
+        <div className="grid grid-cols-2 gap-2">
+          {topAuthorsData.map((author) => (
+            <button
+              key={author.author}
+              onClick={() => router.push('/authors')}
+              className="rounded-lg border border-[var(--border)] bg-[var(--bg-card)] p-3 hover:border-[var(--accent)] transition-colors cursor-pointer text-left"
+            >
+              <div className="font-medium text-sm line-clamp-1">{author.author}</div>
+              <div className="text-xs text-[var(--text-muted)] mt-0.5">{author.bookCount} 本</div>
+              <div className="text-sm font-semibold text-[var(--accent)] mt-1">{author.hours}h</div>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-sm font-semibold text-[var(--text-muted)] uppercase tracking-wide">
+          Top 主题
+        </h2>
+        <div className="flex flex-wrap gap-2">
+          {topThemesData.map((t) => (
+            <Link
+              key={t.theme}
+              href={{ pathname: '/shelf', query: { theme: t.theme } }}
+              className="rounded-full border border-[var(--border)] bg-[var(--bg-card)] px-3 py-1.5 text-sm hover:border-[var(--accent)] transition-colors"
+            >
+              {t.theme}{' '}
+              <span className="text-[var(--text-muted)] text-xs">
+                {t.bookCount}
+              </span>
+            </Link>
+          ))}
+        </div>
       </section>
 
       <section className="space-y-3">
@@ -76,7 +161,7 @@ export default function HomePage() {
           </Link>
           <Link
             href="/wall"
-            className="col-span-2 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] p-3 hover:border-[var(--accent)] transition-colors"
+            className="rounded-lg border border-[var(--border)] bg-[var(--bg-card)] p-3 hover:border-[var(--accent)] transition-colors"
           >
             <div className="text-base font-semibold">📷 年度照片墙</div>
             <div className="text-xs text-[var(--text-muted)] mt-0.5">
@@ -125,13 +210,38 @@ export default function HomePage() {
   );
 }
 
-function StatCard({ label, value, unit }: { label: string; value: number; unit: string }) {
+function StatCard({
+  label,
+  value,
+  unit,
+  highlight,
+  secondaryText,
+}: {
+  label: string;
+  value: number;
+  unit: string;
+  highlight?: boolean;
+  secondaryText?: string;
+}) {
   return (
-    <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-card)] p-3 text-center">
-      <div className="text-2xl font-semibold tabular-nums">{value}</div>
+    <div
+      className={`rounded-xl border p-3 text-center ${
+        highlight
+          ? 'border-[var(--accent)] bg-[var(--accent)]/5'
+          : 'border-[var(--border)] bg-[var(--bg-card)]'
+      }`}
+    >
+      <div className={`text-2xl font-semibold tabular-nums ${highlight ? 'text-[var(--accent)]' : ''}`}>
+        {value}
+      </div>
       <div className="text-xs text-[var(--text-muted)] mt-0.5">
         {unit} · {label}
       </div>
+      {secondaryText && (
+        <div className="text-xs text-[var(--accent)] font-medium mt-1">
+          {secondaryText}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,12 +1,19 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
-import { authorProfiles, authorAreaValue, themeColor, THEME_COLORS } from '@/lib/analytics';
+import { useMemo, useState, useEffect } from 'react';
+import { authorProfiles, authorAreaValue, themeColor, THEME_COLORS, booksByAuthor } from '@/lib/analytics';
 import AuthorTreemap from '@/components/AuthorTreemap';
+import BookCover from '@/components/BookCover';
 
 export default function AuthorsPage() {
   const [mode, setMode] = useState<'time' | 'count'>('time');
+  const [expandedAuthor, setExpandedAuthor] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const all = useMemo(() => authorProfiles(), []);
   const entries = useMemo(
@@ -29,6 +36,8 @@ export default function AuthorsPage() {
     entries.forEach((e) => s.add(e.primaryTheme));
     return [...s];
   }, [entries]);
+
+  if (!mounted) return null;
 
   return (
     <div className="space-y-5">
@@ -80,20 +89,33 @@ export default function AuthorsPage() {
         </h2>
         <ol className="divide-y divide-[var(--border)] rounded-xl border border-[var(--border)] bg-[var(--bg-card)] overflow-hidden">
           {top10.map((e, i) => (
-            <li key={e.author} className="flex items-center gap-3 px-4 py-3">
-              <span className="w-6 text-sm text-[var(--text-muted)] tabular-nums">
-                {i + 1}
-              </span>
-              <span
-                className="w-2 h-8 rounded shrink-0"
-                style={{ backgroundColor: themeColor(e.primaryTheme) }}
-              />
-              <div className="flex-1 min-w-0">
-                <div className="font-medium truncate">{e.author}</div>
-                <div className="text-xs text-[var(--text-muted)]">
-                  {e.bookCount} 本{e.totalHours > 0 && ` · ${e.totalHours}h`} · {e.primaryTheme}
+            <li key={e.author}>
+              <button
+                onClick={() => setExpandedAuthor(expandedAuthor === e.author ? null : e.author)}
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[var(--bg-hover)] transition-colors text-left"
+              >
+                <span className="w-6 text-sm text-[var(--text-muted)] tabular-nums">
+                  {i + 1}
+                </span>
+                <span
+                  className="w-2 h-8 rounded shrink-0"
+                  style={{ backgroundColor: themeColor(e.primaryTheme) }}
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium truncate">{e.author}</div>
+                  <div className="text-xs text-[var(--text-muted)]">
+                    {e.bookCount} 本{e.totalHours > 0 && ` · ${e.totalHours}h`} · {e.primaryTheme}
+                  </div>
                 </div>
-              </div>
+                <span className="text-xs text-[var(--text-muted)]">
+                  {expandedAuthor === e.author ? '▼' : '▶'}
+                </span>
+              </button>
+              {expandedAuthor === e.author && (
+                <div className="border-t border-[var(--border)] p-4 bg-[var(--bg-secondary)]">
+                  <AuthorBooks author={e.author} />
+                </div>
+              )}
             </li>
           ))}
         </ol>
@@ -102,6 +124,21 @@ export default function AuthorsPage() {
       <p className="text-xs text-[var(--text-muted)] pt-2">
         颜色覆盖范围：{Object.keys(THEME_COLORS).length} 个主题。未匹配的主题统一显示为灰色。
       </p>
+    </div>
+  );
+}
+
+function AuthorBooks({ author }: { author: string }) {
+  const books = useMemo(() => booksByAuthor(author), [author]);
+
+  return (
+    <div className="space-y-3">
+      <div className="text-xs text-[var(--text-muted)]">{books.length} 本书</div>
+      <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+        {books.map((book) => (
+          <BookCover key={book.bookId} book={book} size="sm" />
+        ))}
+      </div>
     </div>
   );
 }

@@ -1,7 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getBook } from '@/lib/data';
+import { getBook, recommendBooks } from '@/lib/data';
+import BookCover from '@/components/BookCover';
 
 interface Props {
   params: Promise<{ bookId: string }>;
@@ -11,6 +12,8 @@ export default async function BookPage({ params }: Props) {
   const { bookId } = await params;
   const book = getBook(bookId);
   if (!book) notFound();
+
+  const recommendations = recommendBooks(book, 3);
 
   return (
     <div className="space-y-6">
@@ -90,6 +93,53 @@ export default async function BookPage({ params }: Props) {
           <div className="flex flex-wrap gap-2">
             {book.categories.map((c) => (
               <Pill key={c}>{c}</Pill>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {recommendations.length > 0 && (
+        <Section title="相关推荐">
+          <div className="grid gap-3">
+            {recommendations.map((rec) => (
+              <Link
+                key={rec.bookId}
+                href={`/book/${rec.bookId}`}
+                className="flex gap-3 p-3 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] hover:border-[var(--accent)] transition-colors"
+              >
+                <div className="shrink-0 overflow-hidden rounded" style={{ width: 60, height: 84 }}>
+                  {rec.cover ? (
+                    <Image
+                      src={rec.cover}
+                      alt={rec.title}
+                      width={60}
+                      height={84}
+                      className="object-cover w-full h-full"
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-xs text-[var(--text-muted)] p-1 text-center bg-[var(--bg-card)]">
+                      {rec.title}
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium line-clamp-2">{rec.title}</div>
+                  <div className="text-sm text-[var(--text-muted)] mt-0.5 line-clamp-1">{rec.author}</div>
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {rec.themes.slice(0, 2).map((t) => (
+                      <span key={t} className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--accent)]/10 text-[var(--accent)]">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                {rec.finishReading && (
+                  <div className="text-xs font-medium text-[var(--accent)] self-start pt-0.5">
+                    ✓ 读完
+                  </div>
+                )}
+              </Link>
             ))}
           </div>
         </Section>
