@@ -1,0 +1,1814 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的读书画像</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #faf8f5;
+  --text: #2c2c2c;
+  --text-light: #6b6b6b;
+  --accent: #c9a96e;
+  --card-bg: #fff;
+  --border: #e8e4df;
+}
+
+body {
+  font-family: "Noto Serif SC", "Source Han Serif CN", "STSong", Georgia, serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.8;
+  min-height: 100vh;
+}
+
+.view-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+  display: flex;
+  gap: 8px;
+}
+
+.view-toggle button {
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--text-light);
+  transition: all 0.3s;
+}
+
+.view-toggle button.active {
+  background: var(--text);
+  color: #fff;
+  border-color: var(--text);
+}
+
+/* === MINIMAL VIEW === */
+.view-minimal { display: block; }
+.view-wall { display: none; }
+body.show-wall .view-minimal { display: none; }
+body.show-wall .view-wall { display: block; }
+
+.hero {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 120px 40px 80px;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: 2.4rem;
+  font-weight: 400;
+  letter-spacing: 4px;
+  margin-bottom: 16px;
+}
+
+.hero .subtitle {
+  color: var(--text-light);
+  font-size: 1rem;
+  margin-bottom: 60px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 40px 0;
+  margin-bottom: 80px;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-item .number {
+  font-size: 2.2rem;
+  font-weight: 300;
+  color: var(--text);
+  font-family: "DIN Alternate", "Helvetica Neue", sans-serif;
+}
+
+.stat-item .label {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  margin-top: 4px;
+  letter-spacing: 2px;
+}
+
+.section {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 40px 80px;
+}
+
+.section-title {
+  font-size: 0.85rem;
+  letter-spacing: 4px;
+  color: var(--text-light);
+  text-transform: uppercase;
+  margin-bottom: 32px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.one-liner {
+  font-size: 1.2rem;
+  line-height: 2;
+  margin-bottom: 40px;
+  text-indent: 2em;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 60px;
+}
+
+.tags span {
+  padding: 6px 18px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+
+.category-bars {
+  margin-bottom: 40px;
+}
+
+.cat-bar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.cat-bar .cat-name {
+  width: 80px;
+  font-size: 0.8rem;
+  color: var(--text-light);
+  text-align: right;
+  padding-right: 16px;
+  flex-shrink: 0;
+}
+
+.cat-bar .bar-wrap {
+  flex: 1;
+  height: 24px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.cat-bar .bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1s ease;
+}
+
+.cat-bar .cat-count {
+  width: 40px;
+  font-size: 0.75rem;
+  color: var(--text-light);
+  padding-left: 12px;
+}
+
+.author-list {
+  list-style: none;
+}
+
+.author-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.95rem;
+}
+
+.author-list li .author-name {
+  font-weight: 500;
+}
+
+.author-list li .author-meta {
+  color: var(--text-light);
+  font-size: 0.8rem;
+}
+
+/* === WALL VIEW === */
+.wall-header {
+  text-align: center;
+  padding: 80px 40px 40px;
+}
+
+.wall-header h2 {
+  font-size: 1.6rem;
+  font-weight: 400;
+  letter-spacing: 2px;
+}
+
+.wall-header p {
+  color: var(--text-light);
+  font-size: 0.9rem;
+  margin-top: 8px;
+}
+
+.sort-toggle {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.sort-toggle button {
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: inherit;
+  color: var(--text-light);
+  transition: all 0.3s;
+}
+
+.sort-toggle button.active {
+  background: var(--text);
+  color: #fff;
+  border-color: var(--text);
+}
+
+.book-wall {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 10px;
+  padding: 20px 40px 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (max-width: 900px) { .book-wall { grid-template-columns: repeat(5, 1fr); } }
+@media (max-width: 600px) { .book-wall { grid-template-columns: repeat(3, 1fr); padding: 20px 16px; } }
+
+.book-card {
+  margin-bottom: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--card-bg);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.book-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.book-card .card-cover img {
+  width: 100%;
+  display: block;
+  border-radius: 8px 8px 0 0;
+}
+
+.book-card .card-color {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  min-height: 100px;
+}
+
+.book-card .card-color .card-title {
+  color: rgba(255,255,255,0.95);
+  font-size: 0.95rem;
+  text-align: center;
+  line-height: 1.6;
+  font-weight: 500;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.book-card .card-info {
+  padding: 6px 8px 8px;
+}
+
+.book-card .card-info .card-author {
+  font-size: 0.65rem;
+  color: var(--text-light);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.footer {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-light);
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+}
+
+@media (max-width: 600px) {
+  .hero { padding: 80px 24px 60px; }
+  .hero h1 { font-size: 1.8rem; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+  .stat-item .number { font-size: 1.6rem; }
+  .section { padding: 0 24px 60px; }
+}
+</style>
+</head>
+<body>
+
+<div class="view-toggle">
+  <button class="active" onclick="toggleView('minimal')">读书画像</button>
+  <button onclick="toggleView('wall')">书架墙</button>
+</div>
+
+<!-- MINIMAL VIEW -->
+<div class="view-minimal">
+  <div class="hero">
+    <h1>我的读书画像</h1>
+    <p class="subtitle">微信读书 · 2016-02 至今</p>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="number">1,983</div>
+        <div class="label">小时</div>
+      </div>
+      <div class="stat-item">
+        <div class="number">526</div>
+        <div class="label">读过</div>
+      </div>
+      <div class="stat-item">
+        <div class="number">365</div>
+        <div class="label">读完</div>
+      </div>
+      <div class="stat-item">
+        <div class="number">1929</div>
+        <div class="label">天</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">关于我</div>
+    <p class="one-liner">以 2000 小时阅读时长，构建了经典外国文学 + 世界史 + 政治哲学为核心的深度阅读体系。</p>
+    <div class="tags">
+      <span>经典主义</span>
+      <span>全球视野</span>
+      <span>深度阅读者</span>
+      <span>人文社科</span>
+      <span>硬核科幻</span>
+      <span>思想型读者</span>
+      <span>笔记达人</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">阅读偏好</div>
+    <div class="category-bars">
+      <div class="cat-bar">
+        <span class="cat-name">精品小说</span>
+        <div class="bar-wrap"><div class="bar-fill" style="width:30%;background:#e8927c"></div></div>
+        <span class="cat-count">66</span>
+      </div>
+      <div class="cat-bar">
+        <span class="cat-name">文学</span>
+        <div class="bar-wrap"><div class="bar-fill" style="width:28%;background:#7cb5e8"></div></div>
+        <span class="cat-count">63</span>
+      </div>
+      <div class="cat-bar">
+        <span class="cat-name">历史</span>
+        <div class="bar-wrap"><div class="bar-fill" style="width:20%;background:#c9a96e"></div></div>
+        <span class="cat-count">45</span>
+      </div>
+      <div class="cat-bar">
+        <span class="cat-name">社会文化</span>
+        <div class="bar-wrap"><div class="bar-fill" style="width:9%;background:#8bc78b"></div></div>
+        <span class="cat-count">19</span>
+      </div>
+      <div class="cat-bar">
+        <span class="cat-name">哲学宗教</span>
+        <div class="bar-wrap"><div class="bar-fill" style="width:5%;background:#b088c9"></div></div>
+        <span class="cat-count">11</span>
+      </div>
+      <div class="cat-bar">
+        <span class="cat-name">政治军事</span>
+        <div class="bar-wrap"><div class="bar-fill" style="width:5%;background:#e87c7c"></div></div>
+        <span class="cat-count">11</span>
+      </div>
+      <div class="cat-bar">
+        <span class="cat-name">科学技术</span>
+        <div class="bar-wrap"><div class="bar-fill" style="width:1%;background:#c9c96e"></div></div>
+        <span class="cat-count">2</span>
+      </div>
+      <div class="cat-bar">
+        <span class="cat-name">人物传记</span>
+        <div class="bar-wrap"><div class="bar-fill" style="width:1%;background:#e8b87c"></div></div>
+        <span class="cat-count">2</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">偏爱作者</div>
+    <ul class="author-list">
+      <li><span class="author-name">陀思妥耶夫斯基</span><span class="author-meta">10本 · 83小时57分钟</span></li>
+      <li><span class="author-name">阿西莫夫</span><span class="author-meta">13本 · 65小时14分钟</span></li>
+      <li><span class="author-name">弗朗西斯·福山</span><span class="author-meta">6本 · 53小时4分钟</span></li>
+      <li><span class="author-name">列夫·托尔斯泰</span><span class="author-meta">7本 · 37小时59分钟</span></li>
+      <li><span class="author-name">三岛由纪夫</span><span class="author-meta">7本 · 37小时53分钟</span></li>
+      <li><span class="author-name">阿加莎·克里斯蒂</span><span class="author-meta">9本 · 35小时55分钟</span></li>
+      <li><span class="author-name">刘震云</span><span class="author-meta">6本 · 22小时33分钟</span></li>
+    </ul>
+  </div>
+</div>
+
+<!-- WALL VIEW -->
+<div class="view-wall">
+  <div class="wall-header">
+    <h2>书架墙</h2>
+    <p>223 本书</p>
+    <div class="sort-toggle">
+      <button class="active" onclick="sortWall('default')">按时间</button>
+      <button onclick="sortWall('category')">按分类</button>
+      <button onclick="sortWall('author')">按作者</button>
+    </div>
+  </div>
+  <div class="book-wall">
+    <div class="book-card" data-category="文学-经典作品" data-author="茨威格" data-time="1779107219">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/787/23303787/t6_23303787.jpg" alt="斯·茨威格中短篇小说选" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">茨威格</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-治愈小说" data-author="弗雷德里克·巴克曼" data-time="1779107218">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/16/yuewen_814146/t6_yuewen_8141461689328417.jpg" alt="一个叫欧维的男人决定去死（同名电影原著）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">弗雷德里克·巴克曼</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="三岛由纪夫" data-time="1779107217">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/428/40681428/t6_40681428.jpg" alt="假面的告白（读客三个圈经典文库）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">三岛由纪夫</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-女性小说" data-author="叶真中显" data-time="1779107216">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/67/YueWen_33483909/t6_YueWen_33483909.jpg" alt="绝叫（同名日剧原著）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">叶真中显</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="夏目漱石" data-time="1779107215">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/639/26767639/t6_26767639.jpg" alt="我是猫（读客三个圈经典文库）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">夏目漱石</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="[法]小仲马" data-time="1779107214">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/117/843117/t6_843117.jpg" alt="茶花女" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[法]小仲马</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="三浦紫苑" data-time="1779107214">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/15/yuewen_27247670/t6_yuewen_272476701703141170.jpg" alt="强风吹拂（2023版｜同名动画原著）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">三浦紫苑</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-社会小说" data-author="约翰·威廉斯" data-time="1779107213">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/24/YueWen_831600/t6_YueWen_831600.jpg" alt="斯通纳（易烊千玺《小小的我》刘春和的人生之书）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">约翰·威廉斯</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="库尔特·冯内古特" data-time="1779107213">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/16/3300021016/t6_3300021016.jpg" alt="五号屠场（世界禁书TOP1）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">库尔特·冯内古特</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="玛格丽特·阿特伍德" data-time="1779107212">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/54/YueWen_32847295/t6_YueWen_32847295.jpg" alt="证言（《使女的故事》续作｜同名美剧原著）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">玛格丽特·阿特伍德</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-治愈小说" data-author="雷蒙德·钱德勒" data-time="1779107212">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/63/YueWen_23355045/t6_YueWen_23355045.jpg" alt="漫长的告别（读客三个圈经典文库）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">雷蒙德·钱德勒</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-社会小说" data-author="玛格丽特·阿特伍德" data-time="1779107211">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/50/YueWen_32847291/t6_YueWen_32847291.jpg" alt="使女的故事（同名美剧原著）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">玛格丽特·阿特伍德</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="奥尔科特" data-time="1779107211">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/605/934605/t6_934605.jpg" alt="小妇人（全2册|读客三个圈经典文库）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">奥尔科特</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="艾丽丝·门罗" data-time="1779107210">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/20/yuewen_30599279/t6_yuewen_305992791774345196.jpg" alt="逃离" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">艾丽丝·门罗</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-悬疑推理" data-author="阿加莎·克里斯蒂" data-time="1779107210">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/51/yuewen_728495/t6_yuewen_7284951680854085.jpg" alt="ABC谋杀案" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">阿加莎·克里斯蒂</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-纪实小说" data-author="沈星星" data-time="1779107209">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/49/cpPlatform_ekHdSYkbm5xwFSnPKQHtEx/t6_cpPlatform_ekHdSYkbm5xwFSnPKQHtEx.jpg" alt="边水往事（天才捕手计划·口述真实故事文库）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">沈星星</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-悬疑推理" data-author="阿加莎·克里斯蒂" data-time="1779107209">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/508/728508/t6_728508.jpg" alt="尼罗河上的惨案" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">阿加莎·克里斯蒂</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-历史小说" data-author="马伯庸" data-time="1779107208">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/94/cpplatform_r3jbjhfor1cwqm8yfgbay4/t6_cpplatform_r3jbjhfor1cwqm8yfgbay41719555739.jpg" alt="食南之徒" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">马伯庸</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-悬疑推理" data-author="阿加莎·克里斯蒂" data-time="1779107208">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/37/yuewen_728509/t6_yuewen_7285091680854028.jpg" alt="帷幕" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">阿加莎·克里斯蒂</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-纪实小说" data-author="S.A.阿列克谢耶维奇" data-time="1779107208">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/214/832214/t6_832214.jpg" alt="二手时间" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">S.A.阿列克谢耶维奇</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-社会小说" data-author="刘震云" data-time="1779107207">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/78/cpPlatform_j9gfj9VEpL1o21iXRUhid3/t6_cpPlatform_j9gfj9VEpL1o21iXRUhid3.jpg" alt="温故一九四二（2022新版）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">刘震云</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-女性小说" data-author="林奕含" data-time="1779107207">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/28/YueWen_32206126/t6_YueWen_32206126.jpg" alt="房思琪的初恋乐园（精编版）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">林奕含</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="埃默·托尔斯" data-time="1779107207">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/17/22780717/t6_22780717.jpg" alt="莫斯科绅士（英剧同名原著小说）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">埃默·托尔斯</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-社会小说" data-author="刘震云" data-time="1779107206">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/0/cpPlatform_3300025253/t6_cpPlatform_3300025253.jpg" alt="我叫刘跃进（2022新版｜同名影视原著）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">刘震云</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-历史小说" data-author="马伯庸" data-time="1779107206">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/72/cpplatform_huhykqamxcvke1jfkpqxiv/t6_cpplatform_huhykqamxcvke1jfkpqxiv1695711014.jpg" alt="太白金星有点烦" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">马伯庸</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-社会小说" data-author="雷蒙德·卡佛" data-time="1779107206">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/59/cpPlatform_mHjhLrVCitixTXmANYjYvb/t6_cpPlatform_mHjhLrVCitixTXmANYjYvb.jpg" alt="大教堂" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">雷蒙德·卡佛</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-社会小说" data-author="刘震云" data-time="1779107205">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/42/3300024942/t6_3300024942.jpg" alt="我不是潘金莲（2022新版｜同名电影原著）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">刘震云</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-历史小说" data-author="马伯庸" data-time="1779107205">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/75/cpPlatform_dbb14284a55f1e733b60202b0777255d/t6_cpPlatform_dbb14284a55f1e733b60202b0777255d.jpg" alt="长安的荔枝（同名影视原著）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">马伯庸</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-科幻小说" data-author="玛丽·雪莱" data-time="1779107205">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/42/YueWen_34627880/t6_YueWen_34627880.jpg" alt="弗兰肯斯坦（译文经典）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">玛丽·雪莱</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-社会小说" data-author="刘震云" data-time="1779107204">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/12/yuewen_163703/t6_yuewen_1637031703685061.jpg" alt="手机（葛优、张国立主演同名电影原著）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">刘震云</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-历史读物" data-author="马伯庸" data-time="1779107204">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/813/24129813/t6_24129813.jpg" alt="显微镜下的大明" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">马伯庸</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="经济理财-财经" data-author="[美]乔纳森·利维" data-time="1779107204">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/75/cpplatform_6kkztjrgtlaprnj6gm9tif/t6_cpplatform_6kkztjrgtlaprnj6gm9tif1761189109.jpg" alt="美国资本主义时代【译丛068】" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[美]乔纳森·利维</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-社会小说" data-author="刘震云" data-time="1779107203">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/85/3300010685/t6_3300010685.jpg" alt="一地鸡毛（典藏版）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">刘震云</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-散文杂著" data-author="李娟" data-time="1779107203">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/22/yuewen_244004/t6_yuewen_2440041690201500.jpg" alt="冬牧场" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">李娟</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-历史文化" data-author="拉纳·达斯古普塔" data-time="1779107203">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/61/yuewen_29348492/t6_yuewen_293484921725285900.jpg" alt="资本之都：21世纪德里的美好与野蛮" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">拉纳·达斯古普塔</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-年代小说" data-author="阿城" data-time="1779107202">
+      <div class="card-cover"><img src="https://rescdn.qqmail.com/weread/cover/347/3300004347/t6_3300004347.jpg" alt="阿城文集之一：棋王树王孩子王" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">阿城</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-年代小说" data-author="刘震云" data-time="1779107202">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/40/yuewen_934835/t6_yuewen_9348351742212502.jpg" alt="一句顶一万句" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">刘震云</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="马克斯·伯格霍尔兹" data-time="1779107202">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/19/cpplatform_bmhqta5c1kcc7pmrwqseif/t6_cpplatform_bmhqta5c1kcc7pmrwqseif1699866949.jpg" alt="何故为敌：1941年一个巴尔干小镇的族群冲突、身份认同与历史记忆【译丛063】" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">马克斯·伯格霍尔兹</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-社会小说" data-author="老舍" data-time="1779107201">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/62/YueWen_40400989/t6_YueWen_40400989.jpg" alt="骆驼祥子（人文社·语文阅读推荐丛书）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">老舍</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-年代小说" data-author="莫言" data-time="1779107201">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/79/yuewen_26435427/t6_yuewen_264354271701758059.jpg" alt="生死疲劳【中国诺奖得主代表作】" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">莫言</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="政治军事-政治" data-author="贾森·斯特恩斯" data-time="1779107201">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/68/3300019668/t6_3300019668.jpg" alt="刚果战争：失败的利维坦与被遗忘的非洲大战" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">贾森·斯特恩斯</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-纪实小说" data-author="胡安焉" data-time="1779107200">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/88/cpplatform_8th7igjxnsgez3s8ir24vp/t6_cpplatform_8th7igjxnsgez3s8ir24vp1681204246.jpg" alt="我在北京送快递" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">胡安焉</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-经典作品" data-author="林海音" data-time="1779107200">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/71/YueWen_40401040/t6_YueWen_40401040.jpg" alt="城南旧事（人文社·语文阅读推荐丛书）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">林海音</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="巴巴拉·塔奇曼" data-time="1779107200">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/91/YueWen_29348494/t6_YueWen_29348494.jpg" alt="八月炮火" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">巴巴拉·塔奇曼</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-历史小说" data-author="刘和平" data-time="1779107199">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/310/847310/t6_847310.jpg" alt="大明王朝1566（全集）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">刘和平</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="经济理财-财经" data-author="兰小欢" data-time="1779107199">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/52/YueWen_40055543/t6_YueWen_40055543.jpg" alt="置身事内：中国政府与经济发展" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">兰小欢</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="[美]弗里茨·斯特恩" data-time="1779107199">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/5/yuewen_31471328/t6_yuewen_314713281725273000.jpg" alt="金与铁：俾斯麦、布莱希罗德与德意志帝国的建立（理想国译丛 23）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[美]弗里茨·斯特恩</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-影视原著" data-author="李娟" data-time="1779107198">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/31/cpplatform_fy7wyg2acrhxq1vu4yvs9y/t6_cpplatform_fy7wyg2acrhxq1vu4yvs9y1714307419.jpg" alt="我的阿勒泰（马伊琍、周依然、于适主演同名电视剧原著）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">李娟</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="伊丽莎白·皮萨尼" data-time="1779107198">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/594/29348594/t6_29348594.jpg" alt="印尼Etc：众神遗落的珍珠" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">伊丽莎白·皮萨尼</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-社会小说" data-author="J.M.库切" data-time="1779107198">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/236/41282236/t6_41282236.jpg" alt="耻（同名电影原著）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">J.M.库切</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="亚当·图兹" data-time="1779107198">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/464/38887464/t6_38887464.jpg" alt="滔天洪水（理想国译丛45）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">亚当·图兹</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="科学技术-工业技术" data-author="汪波" data-time="1779107197">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/2/cpplatform_iqbqcpshcdvsb1evdvwoig/t6_cpplatform_iqbqcpshcdvsb1evdvwoig1681978913.jpg" alt="芯片简史（文津图书奖作品）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">汪波</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="奥尔加·托卡尔丘克" data-time="1779107197">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/65/YueWen_23863089/t6_YueWen_23863089.jpg" alt="太古和其他的时间（2018诺贝尔文学奖得主作品）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">奥尔加·托卡尔丘克</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="胡安·鲁尔福" data-time="1779107197">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/75/YueWen_36610119/t6_YueWen_36610119.jpg" alt="佩德罗·巴拉莫（鲁尔福三部曲）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">胡安·鲁尔福</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="理查德·J.埃文斯" data-time="1779107197">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/14/YueWen_33707822/t6_YueWen_33707822.jpg" alt="第三帝国三部曲：战时的第三帝国（理想国译丛040）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">理查德·J.埃文斯</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="社会文化-法律" data-author="罗翔" data-time="1779107196">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/40/3300012940/t6_3300012940.jpg" alt="法治的细节" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">罗翔</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-悬疑推理" data-author="[日]连城三纪彦" data-time="1779107196">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/67/cpplatform_gqjhre8q1sxp8m23ty5tuy/t6_cpplatform_gqjhre8q1sxp8m23ty5tuy1749550453.jpg" alt="一朵桔梗花（推理界镇圈之宝！“花葬”系列8篇全收录！）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[日]连城三纪彦</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="[哥]加西亚·马尔克斯" data-time="1779107196">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/37/cpplatform_r2gxxutev97tsec61larcy/t6_cpplatform_r2gxxutev97tsec61larcy1752226445.jpg" alt="世上最美的溺水者" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[哥]加西亚·马尔克斯</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="理查德·J.埃文斯" data-time="1779107196">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/55/YueWen_30153140/t6_YueWen_30153140.jpg" alt="第三帝国三部曲：当权的第三帝国（理想国译丛039）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">理查德·J.埃文斯</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="哲学宗教-西方哲学" data-author="[法]卢梭" data-time="1779107195">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/37/YueWen_573318/t6_YueWen_573318.jpg" alt="论人类不平等的起源和基础（果麦经典）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[法]卢梭</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-女性小说" data-author="埃尔夫丽德·耶利内克" data-time="1779107195">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/5/cpplatform_angx4ekseyy4spytsiuceq/t6_cpplatform_angx4ekseyy4spytsiuceq1693302033.jpg" alt="钢琴教师" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">埃尔夫丽德·耶利内克</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="[哥]加西亚•马尔克斯" data-time="1779107195">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/82/3300020482/t6_3300020482.jpg" alt="一桩事先张扬的凶杀案" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[哥]加西亚•马尔克斯</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="理查德·埃文斯" data-time="1779107195">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/913/23934913/t6_23934913.jpg" alt="企鹅欧洲史·竞逐权力：1815—1914" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">理查德·埃文斯</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="哲学宗教-西方哲学" data-author="[法]让-保罗·萨特" data-time="1779107194">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/16/YueWen_23796502/t6_YueWen_23796502.jpg" alt="存在主义是一种人道主义" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[法]让-保罗·萨特</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="赫塔·米勒" data-time="1779107194">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/54/cpplatform_8n1wzd2mnxmn2j9zv4tqkz/t6_cpplatform_8n1wzd2mnxmn2j9zv4tqkz1691399906.jpg" alt="呼吸秋千" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">赫塔·米勒</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="马里奥·巴尔加斯·略萨" data-time="1779107194">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/74/cpPlatform_59PJEfF7gnnjg8nCsdd595/t6_cpPlatform_59PJEfF7gnnjg8nCsdd595.jpg" alt="略萨作品：绿房子" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">马里奥·巴尔加斯·略萨</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="伊恩·克肖" data-time="1779107194">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/915/23934915/t6_23934915.jpg" alt="企鹅欧洲史·地狱之行：1914—1949" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">伊恩·克肖</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="社会文化-社科" data-author="尼尔·波兹曼" data-time="1779107193">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/833/855833/t6_855833.jpg" alt="娱乐至死" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">尼尔·波兹曼</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-悬疑推理" data-author="[法]帕特里克·莫迪亚诺" data-time="1779107193">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/508/935508/t6_935508.jpg" alt="暗店街" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[法]帕特里克·莫迪亚诺</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="弗拉基米尔·纳博科夫" data-time="1779107193">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/13/YueWen_907258/t6_YueWen_907258.jpg" alt="洛丽塔" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">弗拉基米尔·纳博科夫</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="政治军事-军事" data-author="伊恩·托尔" data-time="1779107193">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/96/YueWen_33808583/t6_YueWen_33808583.jpg" alt="征服的怒潮：1942—1944，从瓜岛战役到菲律宾海战役" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">伊恩·托尔</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="哲学宗教-西方哲学" data-author="赫伯特·马尔库塞" data-time="1779107192">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/47/YueWen_25424211/t6_YueWen_25424211.jpg" alt="单向度的人：发达工业社会意识形态研究（睿文馆）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">赫伯特·马尔库塞</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="[日]川端康成" data-time="1779107192">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/61/cpplatform_5wxycrvfybgsw8itfpvd3f/t6_cpplatform_5wxycrvfybgsw8itfpvd3f1729677220.jpg" alt="雪国" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[日]川端康成</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-戏剧文学" data-author="歌德" data-time="1779107192">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/71/YueWen_31855607/t6_YueWen_31855607.jpg" alt="浮士德（果麦经典）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">歌德</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="伊恩·托尔" data-time="1779107192">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/98/YueWen_33808585/t6_YueWen_33808585.jpg" alt="燃烧的大洋：1941—1942，从突袭珍珠港到中途岛战役" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">伊恩·托尔</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="社会文化-社科" data-author="查尔斯·泰勒" data-time="1779107191">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/13/3300018013/t6_3300018013.jpg" alt="现代性的隐忧：需要被挽救的本真理想" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">查尔斯·泰勒</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-戏剧文学" data-author="达里奥·福" data-time="1779107191">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/838/37724838/t6_37724838.jpg" alt="一个无政府主义者的意外死亡" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">达里奥·福</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="[法]纪德" data-time="1779107191">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/35/YueWen_23736455/t6_YueWen_23736455.jpg" alt="窄门（果麦经典）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[法]纪德</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="[英]基思·罗威" data-time="1779107191">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/53/cpplatform_pemrcjtesv5izkccl7qicx/t6_cpplatform_pemrcjtesv5izkccl7qicx1712115002.jpg" alt="野蛮大陆：第二次世界大战后的欧洲（甲骨文）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[英]基思·罗威</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-文学鉴赏" data-author="以赛亚·伯林" data-time="1779107190">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/47/YueWen_26991907/t6_YueWen_26991907.jpg" alt="浪漫主义的根源（伯林文集）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">以赛亚·伯林</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="[美]索尔·贝娄" data-time="1779107190">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/71/cpplatform_cbdqhrhtjztwp6yf8lv7rm/t6_cpplatform_cbdqhrhtjztwp6yf8lv7rm1710495950.jpg" alt="抓住今天" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[美]索尔·贝娄</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="[法]雨果" data-time="1779107190">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/39/856039/t6_856039.jpg" alt="悲惨世界（全集）（经典译林）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[法]雨果</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="丹尼尔·戈迪斯" data-time="1779107190">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/767/24173767/t6_24173767.jpg" alt="以色列：一个民族的重生" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">丹尼尔·戈迪斯</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="政治军事-政治" data-author="刘瑜" data-time="1779107189">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/46/3300016646/t6_3300016646.jpg" alt="可能性的艺术：比较政治学30讲" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">刘瑜</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="社会文化-社科" data-author="韩炳哲" data-time="1779107189">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/61/YueWen_25731054/t6_YueWen_25731054.jpg" alt="倦怠社会" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">韩炳哲</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="[法]大仲马" data-time="1779107189">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/107/853107/t6_853107.jpg" alt="基督山伯爵" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[法]大仲马</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="迈克尔·阿克斯沃西" data-time="1779107189">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/91/YueWen_42712889/t6_YueWen_42712889.jpg" alt="伊朗：被低估的文明与未完成的变革（伊朗对于以色列来说是严重威胁吗？）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">迈克尔·阿克斯沃西</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="[英]罗杰·克劳利" data-time="1779107188">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/77/cpplatform_mly8vxhg75cki3nkcrukha/t6_cpplatform_mly8vxhg75cki3nkcrukha1695693826.jpg" alt="海洋帝国：地中海大决战（甲骨文）【第一流的通俗历史书，今天的宗教战争的绝佳背景资料】" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[英]罗杰·克劳利</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-社会小说" data-author="[土]奥尔罕·帕慕克" data-time="1779107188">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/35/YueWen_23976240/t6_YueWen_23976240.jpg" alt="我的名字叫红（珍藏版）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[土]奥尔罕·帕慕克</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="[英]狄更斯" data-time="1779107188">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/87/932087/t6_932087.jpg" alt="远大前程（译文名著精选）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[英]狄更斯</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="塔米姆·安萨利" data-time="1779107188">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/355/24264355/t6_24264355.jpg" alt="无规则游戏：阿富汗屡被中断的历史（她来信的背后，是更复杂的真相）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">塔米姆·安萨利</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="爱德华多·加莱亚诺" data-time="1779107187">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/575/26314575/t6_26314575.jpg" alt="拉丁美洲被切开的血管" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">爱德华多·加莱亚诺</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="哲学宗教-西方哲学" data-author="罗伯特·诺奇克" data-time="1779107187">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/87/YueWen_936593/t6_YueWen_936593.jpg" alt="无政府、国家和乌托邦" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">罗伯特·诺奇克</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="罗伯特·斯蒂文森" data-time="1779107187">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/877/25313877/t6_25313877.jpg" alt="金银岛（读客三个圈经典文库）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">罗伯特·斯蒂文森</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="[美]艾达·费雷尔" data-time="1779107187">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/9/cpplatform_twrfmvatitb7if3s12aim2/t6_cpplatform_twrfmvatitb7if3s12aim21734575523.jpg" alt="自由古巴：革命、救赎与新生（好望角丛书）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[美]艾达·费雷尔</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="理查德·J.埃文斯" data-time="1779107186">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/28/YueWen_30153134/t6_YueWen_30153134.jpg" alt="第三帝国三部曲：第三帝国的到来（理想国译丛038）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">理查德·J.埃文斯</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="社会文化-社科" data-author="本尼迪克特·安德森" data-time="1779107186">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/41/YueWen_32282916/t6_YueWen_32282916.jpg" alt="想象的共同体（增订版）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">本尼迪克特·安德森</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="威廉·戈尔丁" data-time="1779107186">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/59/YueWen_23791375/t6_YueWen_23791375.jpg" alt="蝇王" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">威廉·戈尔丁</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="加藤阳子" data-time="1779107186">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/22/YueWen_26785390/t6_YueWen_26785390.jpg" alt="日本人为何选择了战争" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">加藤阳子</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="政治军事-政治" data-author="弗朗西斯·福山" data-time="1779107185">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/27/YueWen_29348715/t6_YueWen_29348715.jpg" alt="大断裂：人类本性与社会秩序的重建" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">弗朗西斯·福山</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-科幻小说" data-author="[美]安迪·威尔" data-time="1779107185">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/0/yuewen_41100356/t6_yuewen_411003561772520377.jpg" alt="挽救计划（同名电影原著）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[美]安迪·威尔</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="童书-儿童文学" data-author="[爱尔兰]王尔德" data-time="1779107185">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/89/YueWen_25657592/t6_YueWen_25657592.jpg" alt="快乐王子" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[爱尔兰]王尔德</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="尼古拉·梁赞诺夫斯基 马克·斯坦伯格" data-time="1779107185">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/38/YueWen_31422239/t6_YueWen_31422239.jpg" alt="俄罗斯史（第八版）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">尼古拉·梁赞诺夫斯基 马克·斯坦伯格</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="社会文化-社科" data-author="弗朗西斯·福山" data-time="1779107184">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/99/3300012199/t6_3300012199.jpg" alt="身份政治：对尊严与认同的渴求" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">弗朗西斯·福山</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-科幻小说" data-author="[美]菲利普·迪克" data-time="1779107184">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/94/cpplatform_wq8fzkm1jm5ih9yzcdxzsi/t6_cpplatform_wq8fzkm1jm5ih9yzcdxzsi1768789794.jpg" alt="少数派报告" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[美]菲利普·迪克</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="毛姆" data-time="1779107184">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/16/YueWen_825681/t6_YueWen_825681.jpg" alt="人性的枷锁（果麦经典）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">毛姆</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-纪实文学" data-author="埃德加·斯诺" data-time="1779107184">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/91/YueWen_25409386/t6_YueWen_25409386.jpg" alt="红星照耀中国" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">埃德加·斯诺</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="政治军事-政治" data-author="弗朗西斯·福山" data-time="1779107183">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/86/YueWen_28078052/t6_YueWen_28078052.jpg" alt="政治秩序的起源：从前人类时代到法国大革命" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">弗朗西斯·福山</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="[日]谷崎润一郎" data-time="1779107183">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/22/YueWen_29972153/t6_YueWen_29972153.jpg" alt="春琴抄" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[日]谷崎润一郎</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="[英]石黑一雄" data-time="1779107183">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/75/yuewen_22781953/t6_yuewen_227819531767172578.jpg" alt="莫失莫忘（彩虹版石黑一雄作品）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[英]石黑一雄</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="哲学宗教-西方哲学" data-author="迈克尔·坦纳" data-time="1779107183">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/84/YueWen_752701/t6_YueWen_752701.jpg" alt="牛津通识读本：尼采（中文版）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">迈克尔·坦纳</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="社会文化-社科" data-author="弗朗西斯·福山" data-time="1779107182">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/86/YueWen_29348688/t6_YueWen_29348688.jpg" alt="历史的终结与最后的人" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">弗朗西斯·福山</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-女性小说" data-author="赵南柱" data-time="1779107182">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/531/41577531/t6_41577531.jpg" alt="82年生的金智英（再版｜同名电影原著）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">赵南柱</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="[英]石黑一雄" data-time="1779107182">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/24/yuewen_915074/t6_yuewen_9150741767172584.jpg" alt="远山淡影（彩虹版石黑一雄作品）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[英]石黑一雄</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="哲学宗教-西方哲学" data-author="詹姆斯·戈登·芬利森" data-time="1779107182">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/520/846520/t6_846520.jpg" alt="牛津通识读本：哈贝马斯（中文版）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">詹姆斯·戈登·芬利森</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-历史地理" data-author="劳伦斯·里斯" data-time="1779107181">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/698/846698/t6_846698.jpg" alt="奥斯维辛：一部历史" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">劳伦斯·里斯</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-治愈小说" data-author="小川糸" data-time="1779107181">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/15/YueWen_22523966/t6_YueWen_22523966.jpg" alt="山茶文具店" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">小川糸</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-散文杂著" data-author="[英]弗吉尼亚·伍尔夫" data-time="1779107181">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/66/yuewen_26797704/t6_yuewen_267977041715156795.jpg" alt="一间只属于自己的房间（果麦经典）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[英]弗吉尼亚·伍尔夫</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-文学鉴赏" data-author="乔纳森·卡勒" data-time="1779107181">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/62/YueWen_846495/t6_YueWen_846495.jpg" alt="牛津通识读本：罗兰·巴特（中文版）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">乔纳森·卡勒</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="尤金·罗根" data-time="1779107180">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/96/YueWen_857729/t6_YueWen_857729.jpg" alt="奥斯曼帝国的衰亡：一战中东，1914—1920" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">尤金·罗根</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="[日]川端康成" data-time="1779107180">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/10/cpplatform_famqgwrc44wfwhplqnvs5f/t6_cpplatform_famqgwrc44wfwhplqnvs5f1756785269.jpg" alt="古都" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[日]川端康成</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="[英]弗吉尼亚·伍尔夫" data-time="1779107180">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/767/24242767/t6_24242767.jpg" alt="到灯塔去（伍尔夫文集）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[英]弗吉尼亚·伍尔夫</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="哲学宗教-西方哲学" data-author="加里·古廷" data-time="1779107180">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/41/YueWen_846502/t6_YueWen_846502.jpg" alt="牛津通识读本：福柯（中文版）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">加里·古廷</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="奥兰多·费吉斯" data-time="1779107179">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/55/YueWen_27357098/t6_YueWen_27357098.jpg" alt="克里米亚战争：被遗忘的帝国博弈" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">奥兰多·费吉斯</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-年代小说" data-author="莫言" data-time="1779107179">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/73/yuewen_26435421/t6_yuewen_264354211701748538.jpg" alt="蛙【中国诺奖得主代表作】" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">莫言</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="屠格涅夫" data-time="1779107179">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/63/YueWen_932124/t6_YueWen_932124.jpg" alt="猎人笔记（译文名著精选）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">屠格涅夫</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="哲学宗教-哲学著作" data-author="斯蒂芬·埃里克·布朗纳" data-time="1779107179">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/186/25546186/t6_25546186.jpg" alt="牛津通识读本：批判理论（中文版）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">斯蒂芬·埃里克·布朗纳</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="社会文化-社科" data-author="理查德·霍夫施塔特" data-time="1779107178">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/40/40109540/t6_40109540.jpg" alt="美国的反智传统" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">理查德·霍夫施塔特</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="社会文化-社科" data-author="迈克尔·桑德尔" data-time="1779107178">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/28/41176028/t6_41176028.jpg" alt="精英的傲慢：好的社会该如何定义成功？" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">迈克尔·桑德尔</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="[苏联]米哈依尔·肖洛霍夫" data-time="1779107178">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/896/841896/t6_841896.jpg" alt="静静的顿河（全集）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[苏联]米哈依尔·肖洛霍夫</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="哲学宗教-西方哲学" data-author="罗杰·斯克鲁顿" data-time="1779107178">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/513/846513/t6_846513.jpg" alt="牛津通识读本：康德（中文版）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">罗杰·斯克鲁顿</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="保罗·科利尔 约翰·凯" data-time="1779107177">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/49/cpPlatform_9LDD4PYeNASJQySZH5qak8/t6_cpPlatform_9LDD4PYeNASJQySZH5qak8.jpg" alt="贪婪已死：个人主义之后的政治" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">保罗·科利尔 约翰·凯</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-悬疑推理" data-author="[日]叶真中显" data-time="1779107177">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/29/cpplatform_trxlrxg93un5wh4o2qxsyr/t6_cpplatform_trxlrxg93un5wh4o2qxsyr1775544396.jpg" alt="鼓动" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[日]叶真中显</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="鲍·帕斯捷尔纳克" data-time="1779107177">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/19/YueWen_23303895/t6_YueWen_23303895.jpg" alt="日瓦戈医生" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">鲍·帕斯捷尔纳克</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="社会文化-社科" data-author="索尔斯坦·凡勃仑" data-time="1779107177">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/90/26835090/t6_26835090.jpg" alt="有闲阶级论（译文经典）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">索尔斯坦·凡勃仑</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="政治军事-政治" data-author="弗雷德里克·沃特金斯" data-time="1779107176">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/74/YueWen_857862/t6_YueWen_857862.jpg" alt="西方政治传统：近代自由主义之发展" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">弗雷德里克·沃特金斯</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-女性小说" data-author="山田宗树" data-time="1779107176">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/50/YueWen_36927214/t6_YueWen_36927214.jpg" alt="被嫌弃的松子的一生（2021版｜同名电影原著）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">山田宗树</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="陀思妥耶夫斯基" data-time="1779107176">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/22/YueWen_31808213/t6_YueWen_31808213.jpg" alt="被伤害与侮辱的人们（陀思妥耶夫斯基文集2015）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">陀思妥耶夫斯基</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="汉娜·阿伦特" data-time="1779107176">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/36/YueWen_849496/t6_YueWen_849496.jpg" alt="艾希曼在耶路撒冷：一份关于平庸的恶的报告" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">汉娜·阿伦特</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="[荷]伊恩·布鲁玛" data-time="1779107175">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/31/YueWen_31471326/t6_YueWen_31471326.jpg" alt="创造日本：1853—1964" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[荷]伊恩·布鲁玛</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-经典作品" data-author="陀思妥耶夫斯基" data-time="1779107175">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/26/YueWen_31808217/t6_YueWen_31808217.jpg" alt="白夜（陀思妥耶夫斯基文集2015）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">陀思妥耶夫斯基</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="社会文化-社科" data-author="[美]尼尔·波兹曼" data-time="1779107175">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/612/25369612/t6_25369612.jpg" alt="技术垄断：文化向技术投降" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[美]尼尔·波兹曼</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="小熊英二" data-time="1779107174">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/46/YueWen_857774/t6_YueWen_857774.jpg" alt="活着回来的男人：一个普通日本兵的二战及战后生命史" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">小熊英二</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-社会小说" data-author="陀思妥耶夫斯基" data-time="1779107174">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/55/YueWen_31808225/t6_YueWen_31808225.jpg" alt="鬼（陀思妥耶夫斯基文集2015）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">陀思妥耶夫斯基</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="哲学宗教-西方哲学" data-author="马克斯·韦伯" data-time="1779107174">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/96/YueWen_25913011/t6_YueWen_25913011.jpg" alt="新教伦理与资本主义精神" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">马克斯·韦伯</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="康拉德·H·雅劳施" data-time="1779107173">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/48/3300014448/t6_3300014448.jpg" alt="破碎的生活：普通德国人经历的20世纪" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">康拉德·H·雅劳施</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-纪实文学" data-author="陀思妥耶夫斯基" data-time="1779107173">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/211/31808211/t6_31808211.jpg" alt="死屋手记（陀思妥耶夫斯基文集2015）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">陀思妥耶夫斯基</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="社会文化-社科" data-author="玛丽亚·米斯" data-time="1779107173">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/99/cpplatform_ubtspaamn5bqb8cutj4mca/t6_cpplatform_ubtspaamn5bqb8cutj4mca1693820444.jpg" alt="父权制与资本积累：国际劳动分工中的女性" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">玛丽亚·米斯</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="[荷]伊恩·布鲁玛" data-time="1779107172">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/554/29348554/t6_29348554.jpg" alt="零年：1945·现代世界诞生的时刻" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[荷]伊恩·布鲁玛</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="奥兰多·费吉斯" data-time="1779107172">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/508/29348508/t6_29348508.jpg" alt="娜塔莎之舞：俄罗斯文化史" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">奥兰多·费吉斯</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="社会文化-社科" data-author="[日]上野千鹤子" data-time="1779107172">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/35/3300018035/t6_3300018035.jpg" alt="父权制与资本主义" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[日]上野千鹤子</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="人物传记-传记综合" data-author="纳尔逊·曼德拉" data-time="1779107171">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/39/YueWen_663215/t6_YueWen_663215.jpg" alt="漫漫自由路：曼德拉自传" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">纳尔逊·曼德拉</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-科幻小说" data-author="安迪·威尔" data-time="1779107171">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/87/YueWen_755747/t6_YueWen_755747.jpg" alt="火星救援" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">安迪·威尔</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="社会文化-社科" data-author="西尔维娅·费代里奇" data-time="1779107171">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/3/cpplatform_tmyjvtsffxnlayxu2xppk9/t6_cpplatform_tmyjvtsffxnlayxu2xppk91689058051.jpg" alt="凯列班与女巫：妇女、身体与原始积累" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">西尔维娅·费代里奇</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="陀思妥耶夫斯基" data-time="1779107170">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/33/cpplatform_7gfm8cslefmrpilnlsxvvs/t6_cpplatform_7gfm8cslefmrpilnlsxvvs1694771448.jpg" alt="涅朵奇卡：一个女人的一生（果麦经典）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">陀思妥耶夫斯基</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-科幻小说" data-author="阿瑟·克拉克" data-time="1779107170">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/9/YueWen_25164805/t6_YueWen_25164805.jpg" alt="2001：太空漫游（同名电影原著）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">阿瑟·克拉克</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="艺术-理论" data-author="瓦尔特·本雅明" data-time="1779107170">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/33/cpplatform_in39toep6ws4ruapxebpwi/t6_cpplatform_in39toep6ws4ruapxebpwi1698291219.jpg" alt="技术可复制时代的艺术作品（专家伴读版）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">瓦尔特·本雅明</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="马库斯·苏萨克" data-time="1779107169">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/17/3300024217/t6_3300024217.jpg" alt="偷书贼" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">马库斯·苏萨克</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-科幻小说" data-author="艾萨克·阿西莫夫" data-time="1779107169">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/23/YueWen_537334/t6_YueWen_537334.jpg" alt="银河帝国12：机器人与帝国" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">艾萨克·阿西莫夫</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="哲学宗教-西方哲学" data-author="[法]路易·阿尔都塞" data-time="1779107169">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/66/3300008766/t6_3300008766.jpg" alt="论再生产" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[法]路易·阿尔都塞</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="卡勒德·胡赛尼" data-time="1779107168">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/46/yuewen_546339/t6_yuewen_5463391747707629.jpg" alt="追风筝的人（珍藏纪念版）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">卡勒德·胡赛尼</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-科幻小说" data-author="艾萨克·阿西莫夫" data-time="1779107168">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/26/YueWen_537337/t6_YueWen_537337.jpg" alt="银河帝国11：曙光中的机器人" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">艾萨克·阿西莫夫</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-文学鉴赏" data-author="彼得·巴里" data-time="1779107168">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/43/cpplatform_uwc3gtrvbvyoy7qejdhvh1/t6_cpplatform_uwc3gtrvbvyoy7qejdhvh11686558281.jpg" alt="理论入门：文学与文化理论导论" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">彼得·巴里</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="卡勒德·胡赛尼" data-time="1779107167">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/360/567360/t6_567360.jpg" alt="灿烂千阳" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">卡勒德·胡赛尼</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-科幻小说" data-author="艾萨克·阿西莫夫" data-time="1779107167">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/63/YueWen_538126/t6_YueWen_538126.jpg" alt="银河帝国10：裸阳" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">艾萨克·阿西莫夫</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="政治军事-军事" data-author="伊恩·托尔" data-time="1779107167">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/4/YueWen_41857397/t6_YueWen_41857397.jpg" alt="诸神的黄昏：1944—1945，从莱特湾战役到日本投降" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">伊恩·托尔</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-悬疑推理" data-author="秋吉理香子" data-time="1779107166">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/58/yuewen_25121818/t6_yuewen_251218181713853626.jpg" alt="圣母（“叙诡女王”极致推理，日本现象级社会派推理作品）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">秋吉理香子</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-科幻小说" data-author="艾萨克·阿西莫夫" data-time="1779107166">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/64/YueWen_538127/t6_YueWen_538127.jpg" alt="银河帝国9：钢穴" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">艾萨克·阿西莫夫</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="政治军事-政治" data-author="[英]沈艾娣" data-time="1779107166">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/89/cpplatform_wcgm6hpzgpppvaruzhagwd/t6_cpplatform_wcgm6hpzgpppvaruzhagwd1741762010.jpg" alt="翻译的危险：清代中国与大英帝国之间两位译者的非凡人生" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[英]沈艾娣</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-家庭故事" data-author="是枝裕和" data-time="1779107165">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/64/yuewen_861050/t6_yuewen_8610501686308578.jpg" alt="步履不停（新版）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">是枝裕和</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-科幻小说" data-author="艾萨克·阿西莫夫" data-time="1779107165">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/65/YueWen_538128/t6_YueWen_538128.jpg" alt="银河帝国8：我，机器人" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">艾萨克·阿西莫夫</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="玛丽·阿拉纳" data-time="1779107165">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/467/37446467/t6_37446467.jpg" alt="银、剑、石：拉丁美洲的三重烙印" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">玛丽·阿拉纳</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-纪实小说" data-author="伊藤诗织" data-time="1779107164">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/79/YueWen_25109626/t6_YueWen_25109626.jpg" alt="黑箱：日本之耻" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">伊藤诗织</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="社会文化-社科" data-author="[意]毛拉·甘奇塔诺" data-time="1779107164">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/93/cpplatform_4yqqvmcpt3m2ae1apjxatr/t6_cpplatform_4yqqvmcpt3m2ae1apjxatr1721798021.jpg" alt="服美役：美是如何奴役和消费女性的" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[意]毛拉·甘奇塔诺</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="社会文化-社科" data-author="[日]上野千鹤子" data-time="1779107163">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/94/cpplatform_akrjnymgoxljkqszganvbx/t6_cpplatform_akrjnymgoxljkqszganvbx1682248200.jpg" alt="厌女（增订本）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[日]上野千鹤子</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-历史架空" data-author="马伯庸" data-time="1779107163">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/13/cpplatform_3gn7abh5vn4enmll5zfhai/t6_cpplatform_3gn7abh5vn4enmll5zfhai1756264952.jpg" alt="桃花源没事儿" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">马伯庸</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-社会小说" data-author="[韩]韩江" data-time="1779107162">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/54/yuewen_40740496/t6_yuewen_407404961722245314.jpg" alt="素食者【2024诺贝尔文学奖得主】" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[韩]韩江</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="[美]埃里克·塔利亚科佐" data-time="1779107162">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/44/cpplatform_biqg5uyjma7dntfgejezeb/t6_cpplatform_biqg5uyjma7dntfgejezeb1769770010.jpg" alt="渗透边界的秘密贸易：东南亚边境地带的走私与国家，1865—1915【译丛071】" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[美]埃里克·塔利亚科佐</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-纪实文学" data-author="清水洁" data-time="1779107161">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/704/38585704/t6_38585704.jpg" alt="桶川跟踪狂杀人事件" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">清水洁</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="政治军事-政治" data-author="弗朗西斯·福山" data-time="1779107161">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/486/847486/t6_847486.jpg" alt="政治秩序与政治衰败：从工业革命到民主全球化" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">弗朗西斯·福山</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-纪实小说" data-author="清水洁" data-time="1779107160">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/37/cpPlatform_aBMSXqP6fvAWhNnQCW8k9G/t6_cpPlatform_aBMSXqP6fvAWhNnQCW8k9G.jpg" alt="足利女童连续失踪事件" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">清水洁</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-中国近现代" data-author="茅海建" data-time="1779107160">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/378/926378/t6_926378.jpg" alt="天朝的崩溃：鸦片战争再研究（修订版）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">茅海建</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-悬疑推理" data-author="[日]岛田庄司" data-time="1779107159">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/5/3300024305/t6_3300024305.jpg" alt="占星术杀人魔法（全新修订版）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[日]岛田庄司</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="政治军事-政治" data-author="罗伯特·米歇尔斯" data-time="1779107159">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/9/cpPlatform_x9pRtY37LT3jKwMLbJykrT/t6_cpPlatform_x9pRtY37LT3jKwMLbJykrT.jpg" alt="寡头统治铁律：现代民主体制中的政党社会学" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">罗伯特·米歇尔斯</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-科幻小说" data-author="贵志祐介" data-time="1779107158">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/79/YueWen_26713613/t6_YueWen_26713613.jpg" alt="来自新世界（全集｜同名日剧原著）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">贵志祐介</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-社会小说" data-author="麦家" data-time="1779107158">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/97/YueWen_25131764/t6_YueWen_25131764.jpg" alt="人生海海" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">麦家</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="[英]狄更斯" data-time="1779107157">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/614/23303614/t6_23303614.jpg" alt="雾都孤儿" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[英]狄更斯</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-女性小说" data-author="[日]叶真中显" data-time="1779107157">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/7/cpplatform_j222hnf5hzkyvspmxgtekl/t6_cpplatform_j222hnf5hzkyvspmxgtekl1728726362.jpg" alt="恶女的告白（（又名：漫长的午后））" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[日]叶真中显</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-悬疑推理" data-author="阿加莎·克里斯蒂" data-time="1779107156">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/59/yuewen_728510/t6_yuewen_7285101680854092.jpg" alt="底牌" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">阿加莎·克里斯蒂</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="罗杰·克劳利" data-time="1779107156">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/29/cpplatform_ogyedbmpbfmzvzhvpcvxzs/t6_cpplatform_ogyedbmpbfmzvzhvpcvxzs1692953510.jpg" alt="1453：君士坦丁堡之战（地中海三部曲）（甲骨文）【君士坦丁堡的战火，两个文明的撞击】" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">罗杰·克劳利</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-戏剧文学" data-author="阿加莎·克里斯蒂" data-time="1779107155">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/14/YueWen_23796537/t6_YueWen_23796537.jpg" alt="捕鼠器" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">阿加莎·克里斯蒂</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-社会小说" data-author="J.M.库切" data-time="1779107155">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/62/YueWen_40766317/t6_YueWen_40766317.jpg" alt="迈克尔·K的人生与时代（库切文集）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">J.M.库切</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-悬疑推理" data-author="阿加莎·克里斯蒂" data-time="1779107154">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/62/yuewen_728513/t6_yuewen_7285131680853813.jpg" alt="斯泰尔斯庄园奇案" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">阿加莎·克里斯蒂</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="社会文化-社科" data-author="费孝通" data-time="1779107154">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/0/yuewen_23437971/t6_yuewen_234379711750822804.jpg" alt="生育制度" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">费孝通</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-悬疑推理" data-author="阿加莎·克里斯蒂" data-time="1779107153">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/527/728527/t6_728527.jpg" alt="阳光下的罪恶（同名电影原著）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">阿加莎·克里斯蒂</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="[美]汉普顿·塞兹" data-time="1779107153">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/95/cpPlatform_6A4r3jbDLUp6Vf3eQYdyoo/t6_cpPlatform_6A4r3jbDLUp6Vf3eQYdyoo.jpg" alt="冰雪王国：美国军舰珍妮特号的极地远征" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[美]汉普顿·塞兹</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="格雷厄姆·格林 " data-time="1779107152">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/71/3300017871/t6_3300017871.jpg" alt="权力与荣耀" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">格雷厄姆·格林 </div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-年代小说" data-author="莫言" data-time="1779107152">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/81/yuewen_26435429/t6_yuewen_264354291701748545.jpg" alt="檀香刑【中国诺奖得主代表作】" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">莫言</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="J.D.塞林格" data-time="1779107151">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/36/29103036/t6_29103036.jpg" alt="九故事" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">J.D.塞林格</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-科幻小说" data-author="[美]艾萨克·阿西莫夫" data-time="1779107151">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/335/537335/t6_537335.jpg" alt="银河帝国7：基地与地球" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[美]艾萨克·阿西莫夫</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="埃德温·艾勃特" data-time="1779107150">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/76/YueWen_33617657/t6_YueWen_33617657.jpg" alt="平面国（果麦经典）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">埃德温·艾勃特</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-经典作品" data-author="胡安·鲁尔福" data-time="1779107150">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/122/36610122/t6_36610122.jpg" alt="燃烧的原野（鲁尔福三部曲）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">胡安·鲁尔福</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-科幻小说" data-author="[美]菲利普·迪克" data-time="1779107149">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/95/cpplatform_bxtcg6tkkguano69zvw41m/t6_cpplatform_bxtcg6tkkguano69zvw41m1728978241.jpg" alt="仿生人会梦见电子羊吗？" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[美]菲利普·迪克</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-中国古代" data-author="饶胜文 " data-time="1779107149">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/70/cpplatform_1hqwywe89kmv3eudpfk651/t6_cpplatform_1hqwywe89kmv3eudpfk6511681095764.jpg" alt="大汉帝国在巴蜀" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">饶胜文 </div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-历史读物" data-author="张宏杰" data-time="1779107148">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/72/yuewen_44752228/t6_yuewen_447522281679305568.jpg" alt="饥饿的盛世：乾隆时代的得与失" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">张宏杰</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="[美]埃里克·杰·多林" data-time="1779107148">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/44/cpPlatform_iWhNLv5xt8NNe4tPXLQkvu/t6_cpPlatform_iWhNLv5xt8NNe4tPXLQkvu.jpg" alt="利维坦：美国捕鲸史" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[美]埃里克·杰·多林</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="历史-世界史" data-author="尤金·罗根" data-time="1779107147">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/504/26619504/t6_26619504.jpg" alt="征服与革命中的阿拉伯人：1516年至今" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">尤金·罗根</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-社会小说" data-author="三岛由纪夫" data-time="1779107147">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/642/35523642/t6_35523642.jpg" alt="丰饶之海（第一卷）：春雪" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">三岛由纪夫</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="政治军事-政治" data-author="塞缪尔·亨廷顿" data-time="1779107146">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/14/3300014714/t6_3300014714.jpg" alt="文明的冲突与世界秩序的重建" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">塞缪尔·亨廷顿</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-经典作品" data-author="三岛由纪夫" data-time="1779107146">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/9/YueWen_35523636/t6_YueWen_35523636.jpg" alt="丰饶之海（第二卷）：奔马" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">三岛由纪夫</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-社会小说" data-author="三岛由纪夫" data-time="1779107145">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/11/YueWen_35523638/t6_YueWen_35523638.jpg" alt="丰饶之海（第三卷）：晓寺" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">三岛由纪夫</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-社会小说" data-author="三岛由纪夫" data-time="1779107144">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/640/35523640/t6_35523640.jpg" alt="丰饶之海（第四卷）：天人五衰" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">三岛由纪夫</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="社会文化-社科" data-author="C.赖特·米尔斯" data-time="1779107143">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/366/23315366/t6_23315366.jpg" alt="权力精英" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">C.赖特·米尔斯</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-散文杂著" data-author="吉井忍" data-time="1779107142">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/29/cpplatform_fwyuuwozyuxhgstwdmi1mu/t6_cpplatform_fwyuuwozyuxhgstwdmi1mu1688959572.jpg" alt="东京八平米" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">吉井忍</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-女性小说" data-author="崔恩荣" data-time="1779107141">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/50/cpplatform_dzcupluzwjbcszj1zes4a9/t6_cpplatform_dzcupluzwjbcszj1zes4a91692182630.jpg" alt="明亮的夜晚" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">崔恩荣</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="人物传记-女性人物" data-author="[法]安妮·埃尔诺" data-time="1779107140">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/50/cpPlatform_5eYbaBXNuVuXCMmfnshBUv/t6_cpPlatform_5eYbaBXNuVuXCMmfnshBUv.jpg" alt="一个女人的故事：全新修订版" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[法]安妮·埃尔诺</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="[俄]安东·巴甫洛维奇·契诃夫" data-time="1779107139">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/3/cpplatform_tflzvaqswlwudwbyk3wsky/t6_cpplatform_tflzvaqswlwudwbyk3wsky1722933094.jpg" alt="第六病室（果麦经典）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[俄]安东·巴甫洛维奇·契诃夫</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="社会文化-社科" data-author="[英]玛丽·沃斯通克拉夫特" data-time="1779107138">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/98/cpplatform_o5zvg9fevrolwtbsgia1zy/t6_cpplatform_o5zvg9fevrolwtbsgia1zy1762332075.jpg" alt="女性的权利（果麦经典）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[英]玛丽·沃斯通克拉夫特</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="[法]安妮·埃尔诺" data-time="1779107137">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/61/cpplatform_qucmxrgjmpv1fqa5n81ljc/t6_cpplatform_qucmxrgjmpv1fqa5n81ljc1731493957.jpg" alt="悠悠岁月" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[法]安妮·埃尔诺</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="阿卜杜勒拉扎克·古尔纳" data-time="1779107136">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/77/cpPlatform_v5h7fjUo6WwF5Lda2kzjP9/t6_cpPlatform_v5h7fjUo6WwF5Lda2kzjP9.jpg" alt="天堂（古尔纳作品）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">阿卜杜勒拉扎克·古尔纳</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="文学-外国文学" data-author="[英]石黑一雄" data-time="1779022613">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/4/yuewen_934406/t6_yuewen_9344061767172580.jpg" alt="我辈孤雏（彩虹版石黑一雄作品）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[英]石黑一雄</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="精品小说-社会小说" data-author="[匈牙利]克拉斯诺霍尔卡伊·拉斯洛" data-time="1778677622">
+      <div class="card-cover"><img src="https://wfqqreader-1252317822.image.myqcloud.com/cover/795/24240795/t6_24240795.jpg" alt="撒旦探戈（2025诺奖得主作品）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[匈牙利]克拉斯诺霍尔卡伊·拉斯洛</div>
+      </div>
+    </div>
+    <div class="book-card" data-category="科学技术-科学科普" data-author="[英]比尔·布莱森" data-time="1778315649">
+      <div class="card-cover"><img src="https://cdn.weread.qq.com/weread/cover/75/cpplatform_2zunmgv8gwopi9ewkrsvrx/t6_cpplatform_2zunmgv8gwopi9ewkrsvrx1714473311.jpg" alt="人体简史（全彩插图版）" loading="lazy"></div>
+      <div class="card-info">
+        <div class="card-author">[英]比尔·布莱森</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  Generated on 2026-05-18 · 数据来自微信读书
+</div>
+
+<script>
+function toggleView(view) {
+  document.body.classList.toggle('show-wall', view === 'wall');
+  document.querySelectorAll('.view-toggle button').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent.includes(view === 'wall' ? '书架' : '画像'));
+  });
+}
+
+function sortWall(mode) {
+  const wall = document.querySelector('.book-wall');
+  const cards = Array.from(wall.querySelectorAll('.book-card'));
+  cards.sort((a, b) => {
+    if (mode === 'category') return a.dataset.category.localeCompare(b.dataset.category, 'zh');
+    if (mode === 'author') return a.dataset.author.localeCompare(b.dataset.author, 'zh');
+    return Number(b.dataset.time) - Number(a.dataset.time); // default: newest first
+  });
+  cards.forEach(c => wall.appendChild(c));
+  document.querySelectorAll('.sort-toggle button').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent.includes(mode === 'category' ? '分类' : mode === 'author' ? '作者' : '时间'));
+  });
+}
+</script>
+</body>
+</html>
