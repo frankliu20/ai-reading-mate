@@ -18,29 +18,11 @@ version: 1.1.0
 
 ### Step 1: 拉取书架数据
 
-调用微信读书 skill 的 `/shelf/sync` 接口，将完整回包保存为 `my-shelf-cache.json`：
-
-```bash
-curl -X POST "https://i.weread.qq.com/api/agent/gateway" \
-  -H "Authorization: Bearer $WEREAD_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"api_name": "/shelf/sync", "skill_version": "1.0.3"}'
-```
-
-保存到 `reading-profile/my-shelf-cache.json`。
+使用微信读书 skill 拉取完整书架列表（含 bookId、书名、作者、封面、分类、阅读时间等），将回包保存为 `my-shelf-cache.json`。
 
 ### Step 2: 拉取阅读统计
 
-调用 `/readdata/detail` 接口（mode=overall），将完整回包保存为 `my-readdata-cache.json`：
-
-```bash
-curl -X POST "https://i.weread.qq.com/api/agent/gateway" \
-  -H "Authorization: Bearer $WEREAD_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"api_name": "/readdata/detail", "mode": "overall", "skill_version": "1.0.3"}'
-```
-
-保存到 `reading-profile/my-readdata-cache.json`。
+使用微信读书 skill 获取总体阅读统计数据（总时长、天数、读过/读完本数、偏好作者、偏好分类等），将回包保存为 `my-readdata-cache.json`。
 
 ### Step 3: LLM 生成画像标签
 
@@ -56,8 +38,6 @@ curl -X POST "https://i.weread.qq.com/api/agent/gateway" \
 **生成规则：**
 - `tags`：5-8 个标签，概括阅读风格（如"深度阅读者"、"经典主义"、"硬核科幻"等），基于分类偏好、阅读时长、读完率、偏爱作者等综合判断
 - `oneLiner`：一句话（30-60字），描述用户阅读体系的核心特征，需具体到分类和作者倾向
-
-保存到 `reading-profile/my-profile-cache.json`。
 
 ### Step 4: 生成 HTML
 
